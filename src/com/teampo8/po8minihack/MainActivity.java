@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -57,6 +58,63 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public boolean onTouchEvent(MotionEvent touchEvent) {
+		switch (touchEvent.getAction()) {
+			// when user first touches the screen we get the x any y coordinate
+			case MotionEvent.ACTION_DOWN:
+			{
+				x1 = touchEvent.getX();
+				y1 = touchEvent.getY();
+				break;
+			}
+			case MotionEvent.ACTION_UP:
+			{
+				x2 = touchEvent.getX();
+				y2 = touchEvent.getY();
+				
+				// if left to right sweep
+				if (x1 < x2) {
+					position++;
+					if (position > 2)
+						position = 2;
+					
+					if (position == FRAGMENT_MAIN) {
+						transaction = getFragmentManager().beginTransaction();
+						transaction.replace(R.id.container, mainFragment);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					} else if (position == FRAGMENT_RIGHT) {
+						transaction = getFragmentManager().beginTransaction();
+						transaction.replace(R.id.container, rightFragment);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					}
+				}
+				
+				// if right to left sweep
+				if (x1 > x2) {
+					position--;
+					if (position < 0)
+						position = 0;
+					
+					if (position == FRAGMENT_MAIN) {
+						transaction = getFragmentManager().beginTransaction();
+						transaction.replace(R.id.container, mainFragment);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					} else if (position == FRAGMENT_LEFT) {
+						transaction = getFragmentManager().beginTransaction();
+						transaction.replace(R.id.container, leftFragment);
+						transaction.addToBackStack(null);
+						transaction.commit();
+					}
+				}
+				break;
+			}
+		}
+		return false;
 	}
 
 	private static class PlaceHolderFragment extends Fragment {
