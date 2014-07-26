@@ -1,16 +1,43 @@
 package com.teampo8.po8minihack;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class MainActivity extends Activity {
+
+	private final String TAG = "MainActivity";
+
+	// detects swipes
+	float x1, x2;
+	float y1, y2;
+
+	// fragments
+	FragmentTransaction transaction = null;
+	PlaceHolderFragment mainFragment = new PlaceHolderFragment();
+	PlaceHolderFragmentRight rightFragment = new PlaceHolderFragmentRight();
+	PlaceHolderFragmentLeft leftFragment = new PlaceHolderFragmentLeft();
+
+	final int FRAGMENT_LEFT = 0;
+	final int FRAGMENT_MAIN = 1;
+	final int FRAGMENT_RIGHT = 2;
+	int position = FRAGMENT_MAIN; // position of current fragment
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		// set main fragment
+		transaction = getFragmentManager().beginTransaction();
+		transaction.replace(R.id.container, mainFragment);
+		transaction.commit();
 	}
 
 	@Override
@@ -30,5 +57,41 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	private static class PlaceHolderFragment extends Fragment {
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_main, container,
+					false);
+
+			return rootView;
+		}
+	}
+
+	private static class PlaceHolderFragmentRight extends Fragment {
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragment_right,
+					container, false);
+
+			return rootView;
+		}
+	}
+
+	private static class PlaceHolderFragmentLeft extends Fragment {
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View rootView = inflater.inflate(R.layout.fragmant_left, container,
+					false);
+
+			return rootView;
+		}
 	}
 }
