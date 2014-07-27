@@ -1,5 +1,8 @@
 package com.teampo8.po8minihack;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -11,34 +14,70 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainActivity extends Activity {
-
-	private final String TAG = "MainActivity";
-
+public class MainActivity extends Activity implements TabListener {
 	// detects swipes
-	float x1, x2;
-	float y1, y2;
+	float x1, x2, y1, y2;
 
 	// fragments
 	FragmentTransaction transaction = null;
-	PlaceHolderFragment mainFragment = new PlaceHolderFragment();
-	PlaceHolderFragmentRight rightFragment = new PlaceHolderFragmentRight();
-	PlaceHolderFragmentLeft leftFragment = new PlaceHolderFragmentLeft();
+	PlaceHolderFragment mainFragment = new PlaceHolderFragment(
+			R.layout.fragment_main);
+	PlaceHolderFragment rightFragment = new PlaceHolderFragment(
+			R.layout.fragment_right);
+	PlaceHolderFragment leftFragment = new PlaceHolderFragment(
+			R.layout.fragment_left);
 
 	final int FRAGMENT_LEFT = 0;
 	final int FRAGMENT_MAIN = 1;
 	final int FRAGMENT_RIGHT = 2;
-	int position = FRAGMENT_MAIN; // position of current fragment
+	int position = FRAGMENT_LEFT; // position of current fragment
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
+		// setup tabs in the action bar
+		ActionBar bar = getActionBar();
+		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+
+		for (int i = 0; i < 3; i++) {
+			Tab tab = bar.newTab();
+			tab.setText("Tab " + (i + 1));
+			tab.setTabListener(this);
+			bar.addTab(tab);
+		}
+
 		// set main fragment
 		transaction = getFragmentManager().beginTransaction();
-		transaction.replace(R.id.container, mainFragment);
+		transaction.replace(R.id.container, leftFragment);
 		transaction.commit();
+	}
+
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+		if (transaction.isEmpty()) {
+			if (tab.getPosition() == FRAGMENT_LEFT) {
+				position = FRAGMENT_LEFT;
+				SwapFragment(leftFragment, transaction);
+			} else if (tab.getPosition() == FRAGMENT_MAIN) {
+				position = FRAGMENT_MAIN;
+				SwapFragment(mainFragment, transaction);
+			} else if (tab.getPosition() == FRAGMENT_RIGHT) {
+				position = FRAGMENT_RIGHT;
+				SwapFragment(rightFragment, transaction);
+			}
+		}
+	}
+
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
+
+	}
+
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction transaction) {
+
 	}
 
 	@Override
@@ -62,92 +101,71 @@ public class MainActivity extends Activity {
 
 	public boolean onTouchEvent(MotionEvent touchEvent) {
 		switch (touchEvent.getAction()) {
-			// when user first touches the screen we get the x any y coordinate
-			case MotionEvent.ACTION_DOWN:
-			{
-				x1 = touchEvent.getX();
-				y1 = touchEvent.getY();
-				break;
-			}
-			case MotionEvent.ACTION_UP:
-			{
-				x2 = touchEvent.getX();
-				y2 = touchEvent.getY();
-				
-				// if left to right sweep
-				if (x1 < x2) {
-					position++;
-					if (position > 2)
-						position = 2;
-					
-					if (position == FRAGMENT_MAIN) {
-						transaction = getFragmentManager().beginTransaction();
-						transaction.replace(R.id.container, mainFragment);
-						transaction.addToBackStack(null);
-						transaction.commit();
-					} else if (position == FRAGMENT_RIGHT) {
-						transaction = getFragmentManager().beginTransaction();
-						transaction.replace(R.id.container, rightFragment);
-						transaction.addToBackStack(null);
-						transaction.commit();
-					}
+		// when user first touches the screen we get the x any y coordinate
+		case MotionEvent.ACTION_DOWN: {
+			x1 = touchEvent.getX();
+			y1 = touchEvent.getY();
+			break;
+		}
+		case MotionEvent.ACTION_UP: {
+			x2 = touchEvent.getX();
+			y2 = touchEvent.getY();
+
+			// if right to left sweep
+			if (x1 > x2) {
+				position++;
+				if (position > 2)
+					position = 2;
+
+				if (position == FRAGMENT_MAIN) {
+					SwapFragment(mainFragment, transaction);
+					getActionBar().setSelectedNavigationItem(position);
+				} else if (position == FRAGMENT_RIGHT) {
+					SwapFragment(rightFragment, transaction);
+					getActionBar().setSelectedNavigationItem(position);
 				}
-				
-				// if right to left sweep
-				if (x1 > x2) {
-					position--;
-					if (position < 0)
-						position = 0;
-					
-					if (position == FRAGMENT_MAIN) {
-						transaction = getFragmentManager().beginTransaction();
-						transaction.replace(R.id.container, mainFragment);
-						transaction.addToBackStack(null);
-						transaction.commit();
-					} else if (position == FRAGMENT_LEFT) {
-						transaction = getFragmentManager().beginTransaction();
-						transaction.replace(R.id.container, leftFragment);
-						transaction.addToBackStack(null);
-						transaction.commit();
-					}
-				}
-				break;
 			}
+
+			// if left to right sweep
+			if (x1 < x2) {
+				position--;
+				if (position < 0)
+					position = 0;
+
+				if (position == FRAGMENT_MAIN) {
+					SwapFragment(mainFragment, transaction);
+					getActionBar().setSelectedNavigationItem(position);
+				} else if (position == FRAGMENT_LEFT) {
+					SwapFragment(leftFragment, transaction);
+					getActionBar().setSelectedNavigationItem(position);
+				}
+			}
+			break;
+		}
 		}
 		return false;
 	}
 
-	private static class PlaceHolderFragment extends Fragment {
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-
-			return rootView;
-		}
+	private void SwapFragment(Fragment fragmentToSwap,
+			FragmentTransaction transaction) {
+		transaction = getFragmentManager().beginTransaction();
+		transaction.replace(R.id.container, fragmentToSwap);
+		transaction.addToBackStack(null);
+		transaction.commit();
 	}
 
-	private static class PlaceHolderFragmentRight extends Fragment {
+	private final class PlaceHolderFragment extends Fragment {
 
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_right,
-					container, false);
+		private final int id;
 
-			return rootView;
+		public PlaceHolderFragment(int id) {
+			this.id = id;
 		}
-	}
-
-	private static class PlaceHolderFragmentLeft extends Fragment {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragmant_left, container,
-					false);
+			View rootView = inflater.inflate(this.id, container, false);
 
 			return rootView;
 		}

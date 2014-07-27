@@ -7,6 +7,6 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Left Right" />
+        android:text="Right Frag" />
 
 </LinearLayout>
