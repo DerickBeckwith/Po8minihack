@@ -25,7 +25,7 @@ public class MainActivity extends Activity implements TabListener {
 	PlaceHolderFragment rightFragment = new PlaceHolderFragment(
 			R.layout.fragment_right);
 	PlaceHolderFragment leftFragment = new PlaceHolderFragment(
-			R.layout.fragmant_left);
+			R.layout.fragment_left);
 
 	final int FRAGMENT_LEFT = 0;
 	final int FRAGMENT_MAIN = 1;
