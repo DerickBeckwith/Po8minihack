@@ -1,5 +1,8 @@
 package com.teampo8.po8minihack;
 
+import android.app.ActionBar;
+import android.app.ActionBar.Tab;
+import android.app.ActionBar.TabListener;
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
@@ -11,7 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements TabListener {
 
 	private final String TAG = "MainActivity";
 
@@ -39,6 +42,40 @@ public class MainActivity extends Activity {
 		transaction = getFragmentManager().beginTransaction();
 		transaction.replace(R.id.container, mainFragment);
 		transaction.commit();
+		
+		// setup tabs in the action bar
+		ActionBar bar = getActionBar();
+		bar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+		
+		Tab tab1 = bar.newTab();
+		tab1.setText("Tab One");
+		tab1.setTabListener(this);
+		bar.addTab(tab1);
+		
+		Tab tab2 = bar.newTab();
+		tab2.setText("Tab Two");
+		tab2.setTabListener(this);
+		bar.addTab(tab2);
+		
+		Tab tab3 = bar.newTab();
+		tab3.setText("Tab Three");
+		tab3.setTabListener(this);
+		bar.addTab(tab3);
+	}
+	
+	@Override
+	public void onTabSelected(Tab tab, FragmentTransaction transaction) {
+		
+	}
+	
+	@Override
+	public void onTabUnselected(Tab tab, FragmentTransaction transaction) {
+		
+	}
+	
+	@Override
+	public void onTabReselected(Tab tab, FragmentTransaction transaction) {
+		
 	}
 
 	@Override
