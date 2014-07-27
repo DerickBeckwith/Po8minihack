@@ -137,8 +137,8 @@ public class MainActivity extends Activity implements TabListener {
 				x2 = touchEvent.getX();
 				y2 = touchEvent.getY();
 				
-				// if left to right sweep
-				if (x1 < x2) {
+				// if right to left sweep
+				if (x1 > x2) {
 					position++;
 					if (position > 2)
 						position = 2;
@@ -158,8 +158,8 @@ public class MainActivity extends Activity implements TabListener {
 					}
 				}
 				
-				// if right to left sweep
-				if (x1 > x2) {
+				// if left to right sweep
+				if (x1 < x2) {
 					position--;
 					if (position < 0)
 						position = 0;
