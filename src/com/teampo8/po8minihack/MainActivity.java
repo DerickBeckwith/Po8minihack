@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,11 +38,6 @@ public class MainActivity extends Activity implements TabListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		// set main fragment
-		transaction = getFragmentManager().beginTransaction();
-		transaction.replace(R.id.container, mainFragment);
-		transaction.commit();
 		
 		// setup tabs in the action bar
 		ActionBar bar = getActionBar();
@@ -61,11 +57,41 @@ public class MainActivity extends Activity implements TabListener {
 		tab3.setText("Tab Three");
 		tab3.setTabListener(this);
 		bar.addTab(tab3);
+		
+		// set main fragment
+		transaction = getFragmentManager().beginTransaction();
+		transaction.replace(R.id.container, mainFragment);
+		transaction.commit();
 	}
 	
 	@Override
 	public void onTabSelected(Tab tab, FragmentTransaction transaction) {
-		
+		Log.d(TAG, "onTabSelected");
+		if (transaction.isEmpty()) {
+			Log.d(TAG, "Frag transaction is empty");
+			if (tab.getText() == "Tab One") {
+				Log.d(TAG, "Tab One Selected");
+				position = FRAGMENT_LEFT;
+				transaction = getFragmentManager().beginTransaction();
+				transaction.replace(R.id.container, leftFragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
+			} else if (tab.getText() == "Tab Two") {
+				Log.d(TAG, "Tab Two Selected");
+				position = FRAGMENT_MAIN;
+				transaction = getFragmentManager().beginTransaction();
+				transaction.replace(R.id.container, mainFragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
+			} else if (tab.getText() == "Tab Three") {
+				Log.d(TAG, "Tab Three Selected");
+				position = FRAGMENT_RIGHT;
+				transaction = getFragmentManager().beginTransaction();
+				transaction.replace(R.id.container, rightFragment);
+				transaction.addToBackStack(null);
+				transaction.commit();
+			}
+		}
 	}
 	
 	@Override
@@ -122,11 +148,13 @@ public class MainActivity extends Activity implements TabListener {
 						transaction.replace(R.id.container, mainFragment);
 						transaction.addToBackStack(null);
 						transaction.commit();
+						getActionBar().setSelectedNavigationItem(position);
 					} else if (position == FRAGMENT_RIGHT) {
 						transaction = getFragmentManager().beginTransaction();
 						transaction.replace(R.id.container, rightFragment);
 						transaction.addToBackStack(null);
 						transaction.commit();
+						getActionBar().setSelectedNavigationItem(position);
 					}
 				}
 				
@@ -141,11 +169,13 @@ public class MainActivity extends Activity implements TabListener {
 						transaction.replace(R.id.container, mainFragment);
 						transaction.addToBackStack(null);
 						transaction.commit();
+						getActionBar().setSelectedNavigationItem(position);
 					} else if (position == FRAGMENT_LEFT) {
 						transaction = getFragmentManager().beginTransaction();
 						transaction.replace(R.id.container, leftFragment);
 						transaction.addToBackStack(null);
 						transaction.commit();
+						getActionBar().setSelectedNavigationItem(position);
 					}
 				}
 				break;
