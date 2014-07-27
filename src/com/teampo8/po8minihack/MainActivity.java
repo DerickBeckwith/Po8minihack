@@ -25,9 +25,9 @@ public class MainActivity extends Activity implements TabListener {
 
 	// fragments
 	FragmentTransaction transaction = null;
-	PlaceHolderFragment mainFragment = new PlaceHolderFragment();
-	PlaceHolderFragmentRight rightFragment = new PlaceHolderFragmentRight();
-	PlaceHolderFragmentLeft leftFragment = new PlaceHolderFragmentLeft();
+	PlaceHolderFragment mainFragment = new PlaceHolderFragment(R.layout.fragment_main);
+	PlaceHolderFragment rightFragment = new PlaceHolderFragment(R.layout.fragment_right);
+	PlaceHolderFragment leftFragment = new PlaceHolderFragment(R.layout.fragmant_left);
 
 	final int FRAGMENT_LEFT = 0;
 	final int FRAGMENT_MAIN = 1;
@@ -183,37 +183,19 @@ public class MainActivity extends Activity implements TabListener {
 		}
 		return false;
 	}
-
-	private static class PlaceHolderFragment extends Fragment {
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_main, container,
-					false);
-
-			return rootView;
+	
+	private final class PlaceHolderFragment extends Fragment {
+		
+		private final int id;
+		
+		public PlaceHolderFragment(int id) {
+			this.id = id;
 		}
-	}
-
-	private static class PlaceHolderFragmentRight extends Fragment {
-
+		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragment_right,
-					container, false);
-
-			return rootView;
-		}
-	}
-
-	private static class PlaceHolderFragmentLeft extends Fragment {
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			View rootView = inflater.inflate(R.layout.fragmant_left, container,
+			View rootView = inflater.inflate(this.id, container,
 					false);
 
 			return rootView;
